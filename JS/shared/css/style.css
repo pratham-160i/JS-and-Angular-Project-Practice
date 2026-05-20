@@ -1,0 +1,341 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+.page-shell {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.site-header {
+    grid-column: 1 / -1;
+    border-bottom: 2px solid #e0e7ff;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.site-header h1 {
+    font-size: 2rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.site-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.site-content h2 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.site-content h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.site-content section {
+    margin-bottom: 2rem;
+}
+
+.site-content p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #4b5563;
+}
+
+.site-content pre {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-left: 3px solid #3b82f6;
+}
+
+.site-content code {
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+}
+
+/* Sidebar Navigation */
+.site-outline {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.site-outline h2 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+.site-outline nav ul {
+    list-style: none;
+}
+
+.site-outline details {
+    margin-bottom: 0.5rem;
+}
+
+.site-outline summary {
+    cursor: pointer;
+    padding: 0.5rem;
+    color: #0066cc;
+    font-weight: 500;
+    user-select: none;
+}
+
+.site-outline summary:hover {
+    text-decoration: underline;
+}
+
+.site-outline details[open] > summary {
+    color: #0052a3;
+}
+
+.site-outline details ul {
+    list-style: none;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+}
+
+.site-outline a {
+    display: block;
+    padding: 0.4rem 0.5rem;
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.site-outline a:hover {
+    background-color: #f0f4ff;
+    border-radius: 4px;
+}
+
+.site-outline a[aria-current="page"] {
+    color: #0052a3;
+    font-weight: bold;
+    background-color: #e0f2ff;
+    border-radius: 4px;
+}
+
+/* Home hub: single card, gray sidebar (matches curriculum landing layout) */
+.page-shell--hub {
+    max-width: 1120px;
+    margin: 2rem auto;
+    padding: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+    grid-template-columns: 1fr;
+    overflow: hidden;
+}
+
+.page-shell--hub .site-header {
+    padding: 1.5rem 2rem 1rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.page-shell--hub .hub-columns {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    align-items: stretch;
+    min-height: 360px;
+}
+
+.page-shell--hub .site-content {
+    box-shadow: none;
+    border-radius: 0;
+    margin: 0;
+}
+
+.page-shell--hub .site-outline--hub {
+    background: #eef2f7;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: min(100vh, 100%);
+    overflow-y: auto;
+    border-left: 1px solid #e2e8f0;
+}
+
+.hub-hint {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+.curriculum-nav-root {
+    list-style: none;
+}
+
+.curriculum-nav-root > li {
+    margin-bottom: 0.35rem;
+}
+
+.curriculum-day {
+    margin-bottom: 0;
+}
+
+.curriculum-day summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    padding: 0.45rem 0.5rem;
+    color: #2563eb;
+    font-weight: 500;
+    user-select: none;
+    border-radius: 4px;
+}
+
+.curriculum-day summary::-webkit-details-marker {
+    display: none;
+}
+
+.curriculum-day summary::before {
+    content: '\25B8';
+    font-size: 0.7rem;
+    color: #2563eb;
+    line-height: 1;
+}
+
+.curriculum-day[open] summary::before {
+    content: '\25BE';
+}
+
+.curriculum-day summary:hover {
+    background-color: rgba(37, 99, 235, 0.06);
+    text-decoration: none;
+}
+
+.curriculum-sub {
+    list-style: none;
+    margin: 0.35rem 0 0.5rem 1.1rem;
+    padding: 0;
+    border-left: 2px solid #dbeafe;
+    padding-left: 0.65rem;
+}
+
+.curriculum-sub li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+    padding: 0.25rem 0;
+    font-size: 0.85rem;
+}
+
+.curriculum-sub .sub-label {
+    color: #475569;
+    font-weight: 500;
+    min-width: 4.5rem;
+}
+
+.curriculum-sub .sub-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.curriculum-sub .sub-actions a {
+    display: inline;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.curriculum-sub .sub-actions a.hub-code-link {
+    color: #0f766e;
+    font-weight: 500;
+}
+
+.curriculum-sub .sub-actions a.hub-code-link:hover {
+    background-color: #ccfbf1;
+}
+
+.day-extra-js {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 0.5rem 0 0 1.1rem;
+    line-height: 1.45;
+    max-width: 100%;
+}
+
+.day-extra-js a {
+    display: inline;
+    padding: 0;
+    word-break: break-word;
+}
+
+.day-extra-js--muted {
+    font-style: italic;
+}
+
+.day-extra-js--muted code {
+    font-size: 0.72rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-shell {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .page-shell--hub {
+        margin: 1rem;
+        border-radius: 10px;
+    }
+
+    .page-shell--hub .hub-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .page-shell--hub .site-outline--hub {
+        position: static;
+        max-height: none;
+        border-left: none;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .site-outline {
+        position: static;
+    }
+}
