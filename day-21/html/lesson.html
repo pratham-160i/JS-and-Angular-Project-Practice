@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 21 — Clones, immutability &amp; modern objects — Lesson</title>
+    <link rel="preload" href="../../shared/css/style.css" as="style">
+    <link rel="stylesheet" href="../../shared/css/style.css">
+</head>
+<body>
+    <div class="page-shell">
+        <main class="page-main" id="main-content">
+            <header class="page-title">
+                <p class="lesson-label">Day 21 — Clones, immutability &amp; modern objects</p>
+                <h1>Lesson</h1>
+            </header>
+
+            <p class="output-label" style="margin-bottom:1rem;">Open DevTools → Console, or run <code>node day-21/js/lesson.js</code>. Source: <code>../js/lesson.js</code>.</p>
+
+            <details class="exercise" open>
+                <summary>
+                    <span class="lesson-task__tag">1</span>
+                    <span class="lesson-task__title">Shallow vs deep clone</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><strong>Shallow:</strong> <code>{ ...original }</code> and <code>Object.assign({}, original)</code> copy top-level keys only — nested objects stay shared. <strong>JSON</strong> deep-clones plain data but loses <code>Date</code>, <code>Map</code>, <code>undefined</code>, functions.</p>
+                    <pre class="code-sample"><code>const original = {
+  name: &quot;Priya&quot;,
+  address: { city: &quot;Jaipur&quot;, pin: 302001 },
+  hobbies: [&quot;reading&quot;, &quot;trekking&quot;],
+};
+const a = { ...original };
+const b = Object.assign({}, original);
+const c = JSON.parse(JSON.stringify(original));
+a.address.city = &quot;Mumbai&quot;; // original.address changes too
+const tricky = { d: new Date(), m: new Map(), u: undefined };
+JSON.parse(JSON.stringify(tricky)); // Date → string, Map → {}, u dropped</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 1</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">2</span>
+                    <span class="lesson-task__title"><code>structuredClone</code></span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Built-in deep clone for many built-ins. Cannot clone functions / DOM / some class prototypes (<code>DataCloneError</code>).</p>
+                    <pre class="code-sample"><code>const copy = structuredClone(original);
+copy.nested.city = &quot;Mumbai&quot;;
+// original.nested unchanged
+// copy.date instanceof Date → true
+// structuredClone({ fn: () =&gt; {} }); // throws
+
+const o = { x: { y: 1 } };
+const a = { ...o };
+a.x.y = 99;        // o.x.y becomes 99 (shared nested)
+const b = structuredClone(o);
+b.x.y = 50;        // o.x.y unchanged by b alone (doc: check after shallow step)</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 2</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">3</span>
+                    <span class="lesson-task__title"><code>Object.freeze</code> &amp; deep freeze</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><code>Object.freeze</code> is <strong>shallow</strong> — nested objects stay mutable unless you recurse (<code>deepFreeze</code>).</p>
+                    <pre class="code-sample"><code>const config = Object.freeze({ host: &quot;api.example.com&quot;, port: 8080 });
+config.port = 9000; // ignored (strict: TypeError)
+
+const user = Object.freeze({ name: &quot;Priya&quot;, address: { city: &quot;Jaipur&quot; } });
+user.address.city = &quot;Mumbai&quot;; // still works — nested not frozen
+
+function deepFreeze(obj) {
+  Object.values(obj).forEach((v) =&gt; {
+    if (v &amp;&amp; typeof v === &quot;object&quot; &amp;&amp; !Object.isFrozen(v)) deepFreeze(v);
+  });
+  return Object.freeze(obj);
+}</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 3</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">4</span>
+                    <span class="lesson-task__title">Immutable updates</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Spread and replace nested slices — never mutate inputs in place when you need a predictable previous state.</p>
+                    <pre class="code-sample"><code>const u1 = { ...user, age: 26 };
+const u2 = { ...user, address: { ...user.address, city: &quot;Mumbai&quot; } };
+const u3 = { ...user, hobbies: [...user.hobbies, &quot;swimming&quot;] };
+const u4 = { ...user, hobbies: user.hobbies.filter((h) =&gt; h !== &quot;trekking&quot;) };
+const t1 = tasks.map((t) =&gt; (t.id === 1 ? { ...t, done: true } : t));</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 4</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">5</span>
+                    <span class="lesson-task__title">Advanced destructuring</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Defaults, renames, nested picks, array <code>rest</code>, and parameter patterns (common in React props).</p>
+                    <pre class="code-sample"><code>const { name, role = &quot;user&quot; } = { name: &quot;Priya&quot; };
+const { name: userName, role: userRole = &quot;user&quot; } = { name: &quot;Aarav&quot; };
+const { api: { host: apiHost, port: apiPort } } = config;
+const [first = &quot;?&quot;, second = &quot;?&quot;, ...rest] = [1, 2, 3, 4, 5];
+function Card({ title, subtitle = &quot;—&quot;, actions = [] }) { ... }</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 5</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">6</span>
+                    <span class="lesson-task__title">Computed property keys</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Use <code>[expression]</code> as a key — handy for generic <code>updateField(obj, key, value)</code>.</p>
+                    <pre class="code-sample"><code>const field = &quot;city&quot;;
+const b = { [field]: &quot;Mumbai&quot; };
+
+function updateField(obj, key, value) {
+  return { ...obj, [key]: value };
+}</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 6</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">7</span>
+                    <span class="lesson-task__title">Optional chaining (<code>?.</code>) &amp; nullish (<code>??</code>)</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><code>?.</code> short-circuits on <code>null</code>/<code>undefined</code>. <code>??</code> falls back only for <code>null</code> or <code>undefined</code> (not <code>0</code> or <code>&quot;&quot;</code>).</p>
+                    <pre class="code-sample"><code>const city = response?.user?.profile?.city;
+const cityOrDefault = response?.user?.profile?.city ?? &quot;Unknown&quot;;
+const upper = response?.user?.name?.toUpperCase?.();
+const first = response?.user?.tags?.[0] ?? &quot;no tags&quot;;</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 7</p>
+                </div>
+            </details>
+        </main>
+        <aside class="site-outline" aria-label="Curriculum outline">
+            <p class="site-outline-title">Curriculum</p>
+            <ul class="site-outline-tree">
+                <li class="site-outline-item"><a href="../../index.html">Overview</a></li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 1 — Introduction to JavaScript</summary>
+                        <ul>
+                            <li><a href="../../day-1/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-1/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-1/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 2 — Data Types & the Type System</summary>
+                        <ul>
+                            <li><a href="../../day-2/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-2/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-2/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 3 — Operators & Expressions</summary>
+                        <ul>
+                            <li><a href="../../day-3/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-3/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-3/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 4 — Control Flow</summary>
+                        <ul>
+                            <li><a href="../../day-4/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-4/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-4/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 5 — Loops & Iteration</summary>
+                        <ul>
+                            <li><a href="../../day-5/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-5/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-5/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 6 — Functions</summary>
+                        <ul>
+                            <li><a href="../../day-6/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-6/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-6/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 7 — Arrays</summary>
+                        <ul>
+                            <li><a href="../../day-7/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-7/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-7/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 8 — Objects</summary>
+                        <ul>
+                            <li><a href="../../day-8/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-8/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-8/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 9 — ES6+ Essentials</summary>
+                        <ul>
+                            <li><a href="../../day-9/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-9/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-9/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 10 — DOM Manipulation Basics</summary>
+                        <ul>
+                            <li><a href="../../day-10/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-10/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-10/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 11 — Events & Event Handling</summary>
+                        <ul>
+                            <li><a href="../../day-11/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-11/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-11/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 12 — Error Handling & Module Basics</summary>
+                        <ul>
+                            <li><a href="../../day-12/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-12/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-12/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 13 — Execution context & hoisting</summary>
+                        <ul>
+                            <li><a href="../../day-13/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-13/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-13/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 14 — Scope & closures</summary>
+                        <ul>
+                            <li><a href="../../day-14/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-14/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-14/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 15 — The this keyword</summary>
+                        <ul>
+                            <li><a href="../../day-15/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-15/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-15/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 16 — Prototypes & prototype chain</summary>
+                        <ul>
+                            <li><a href="../../day-16/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-16/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-16/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 17 — ES6 classes</summary>
+                        <ul>
+                            <li><a href="../../day-17/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-17/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-17/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 18 — Promises &amp; async/await</summary>
+                        <ul>
+                            <li><a href="../../day-18/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-18/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-18/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 19 — Fetch & APIs</summary>
+                        <ul>
+                            <li><a href="../../day-19/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-19/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-19/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 20 — Iterators & generators</summary>
+                        <ul>
+                            <li><a href="../../day-20/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-20/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-20/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details" open>
+                        <summary>Day 21 — Clones &amp; immutable patterns</summary>
+                        <ul>
+                            <li><a href="lesson.html" aria-current="page">Lesson</a></li>
+                            <li><a href="hands-on.html">Hands-on</a></li>
+                            <li><a href="homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 22 — Review & mini project</summary>
+                        <ul>
+                            <li><a href="../../day-22/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-22/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-22/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </aside>
+    </div>
+    <script defer src="../js/lesson.js"></script>
+    <script src="../../shared/js/nav-lock.js"></script>
+</body>
+</html>

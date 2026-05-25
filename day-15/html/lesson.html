@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 15 — The <code>this</code> keyword — Lesson</title>
+    <link rel="preload" href="../../shared/css/style.css" as="style">
+    <link rel="stylesheet" href="../../shared/css/style.css">
+</head>
+<body>
+    <div class="page-shell">
+        <main class="page-main" id="main-content">
+            <header class="page-title">
+                <p class="lesson-label">Day 15 — The <code>this</code> keyword</p>
+                <h1>Lesson</h1>
+            </header>
+
+            <p class="output-label" style="margin-bottom:1rem;">Open DevTools → Console, or run <code>node day-15/js/lesson.js</code>. The script uses <code>&quot;use strict&quot;</code> so default <code>this</code> in plain calls is <code>undefined</code> (not <code>window</code>). Source: <code>../js/lesson.js</code>.</p>
+
+            <details class="exercise" open>
+                <summary>
+                    <span class="lesson-task__tag">1</span>
+                    <span class="lesson-task__title">What is <code>this</code>?</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><code>this</code> is set <strong>when the function is called</strong> — it is the <strong>receiver</strong> of the call (who “asked” the function to run), not where the function was written.</p>
+                    <pre class="code-sample"><code>function whoAmI() { console.log(this); }
+whoAmI(); // strict: undefined
+const user = { name: &quot;Priya&quot;, whoAmI };
+user.whoAmI(); // user object</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 1</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">2</span>
+                    <span class="lesson-task__title">The four binding rules</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><strong>Default</strong> — plain <code>fn()</code>: <code>undefined</code> in strict / global in sloppy. <strong>Implicit</strong> — <code>obj.method()</code>: <code>this</code> is <code>obj</code>. <strong>Explicit</strong> — <code>fn.call(x)</code> / <code>apply</code> / <code>bind</code>: <code>this</code> is <code>x</code>. <strong><code>new</code></strong> — <code>this</code> is the new instance.</p>
+                    <pre class="code-sample"><code>const obj = { n: 7, f() { return this.n; } };
+const g = obj.f;
+console.log(obj.f()); // 7
+console.log(g());     // strict: throws (no receiver)</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> catches the loose-call error for Topic 2 follow-along.</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">3</span>
+                    <span class="lesson-task__title"><code>call</code>, <code>apply</code>, <code>bind</code></span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p><code>.call(thisArg, a, b)</code> — invoke now, args listed. <code>.apply(thisArg, [a, b])</code> — invoke now, args array. <code>.bind(thisArg, a)</code> — returns a new function; can pre-fill arguments. A hard-bound function ignores later <code>.call</code> for <code>this</code>.</p>
+                    <pre class="code-sample"><code>const greetPriya = greet.bind(u, &quot;Jaipur&quot;);
+greetPriya(&quot;English&quot;);
+greetPriya.call({ name: &quot;Aarav&quot; }, &quot;Tamil&quot;); // still Priya + Jaipur</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 3</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">4</span>
+                    <span class="lesson-task__title">Arrow functions — lexical <code>this</code></span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Arrows have <strong>no</strong> own <code>this</code>; they close over the enclosing scope. Avoid arrows as object methods if you need <code>this</code> to be the object. Prefer them <strong>inside</strong> methods for callbacks (e.g. <code>forEach</code>) so <code>this</code> stays the outer receiver.</p>
+                    <pre class="code-sample"><code>greetAll() {
+  this.members.forEach((m) =&gt; {
+    console.log(`Hi ${m}, team ${this.members.length}`);
+  });
+}</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 4</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">5</span>
+                    <span class="lesson-task__title"><code>this</code> in classes</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>In <code>constructor</code>, <code>this</code> is the instance being built. In methods, <code>this</code> is whichever instance the method was called on — unless the method is passed around as a bare function (then you lose the receiver).</p>
+                    <pre class="code-sample"><code>const greetFn = a.greet;
+greetFn(); // TypeError — lost this</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 5 (wrapped in <code>try/catch</code>)</p>
+                </div>
+            </details>
+
+            <details class="exercise">
+                <summary>
+                    <span class="lesson-task__tag">6</span>
+                    <span class="lesson-task__title">Lost <code>this</code> — bind, wrapper, class field arrow</span>
+                </summary>
+                <div class="lesson-task__body">
+                    <p>Passing <code>c.inc</code> as a callback drops the receiver. Fixes: <code>c.inc.bind(c)</code>, <code>() =&gt; c.inc()</code>, or an instance arrow field <code>inc = () =&gt; { ... }</code> so the function itself closes over <code>this</code>.</p>
+                    <pre class="code-sample"><code>setTimeout(c.inc.bind(c), 100);
+setTimeout(() =&gt; c.inc(), 100);
+
+class CounterArrow {
+  count = 0;
+  inc = () =&gt; { this.count++; };
+}</code></pre>
+                    <p class="output-label"><code>../js/lesson.js</code> — Topic 6 uses synchronous demos so you do not wait on timers.</p>
+                </div>
+            </details>
+        </main>
+        <aside class="site-outline" aria-label="Curriculum outline">
+            <p class="site-outline-title">Curriculum</p>
+            <ul class="site-outline-tree">
+                <li class="site-outline-item"><a href="../../index.html">Overview</a></li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 1 — Introduction to JavaScript</summary>
+                        <ul>
+                            <li><a href="../../day-1/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-1/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-1/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 2 — Data Types & the Type System</summary>
+                        <ul>
+                            <li><a href="../../day-2/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-2/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-2/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 3 — Operators & Expressions</summary>
+                        <ul>
+                            <li><a href="../../day-3/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-3/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-3/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 4 — Control Flow</summary>
+                        <ul>
+                            <li><a href="../../day-4/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-4/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-4/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 5 — Loops & Iteration</summary>
+                        <ul>
+                            <li><a href="../../day-5/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-5/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-5/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 6 — Functions</summary>
+                        <ul>
+                            <li><a href="../../day-6/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-6/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-6/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 7 — Arrays</summary>
+                        <ul>
+                            <li><a href="../../day-7/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-7/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-7/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 8 — Objects</summary>
+                        <ul>
+                            <li><a href="../../day-8/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-8/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-8/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 9 — ES6+ Essentials</summary>
+                        <ul>
+                            <li><a href="../../day-9/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-9/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-9/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 10 — DOM Manipulation Basics</summary>
+                        <ul>
+                            <li><a href="../../day-10/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-10/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-10/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 11 — Events & Event Handling</summary>
+                        <ul>
+                            <li><a href="../../day-11/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-11/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-11/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 12 — Error Handling & Module Basics</summary>
+                        <ul>
+                            <li><a href="../../day-12/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-12/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-12/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 13 — Execution context &amp; hoisting</summary>
+                        <ul>
+                            <li><a href="../../day-13/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-13/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-13/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details">
+                        <summary>Day 14 — Scope &amp; closures</summary>
+                        <ul>
+                            <li><a href="../../day-14/html/lesson.html">Lesson</a></li>
+                            <li><a href="../../day-14/html/hands-on.html">Hands-on</a></li>
+                            <li><a href="../../day-14/html/homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li class="site-outline-day">
+                    <details class="site-outline-details" open>
+                        <summary>Day 15 — The <code>this</code> keyword</summary>
+                        <ul>
+                            <li><a href="lesson.html" aria-current="page">Lesson</a></li>
+                            <li><a href="hands-on.html">Hands-on</a></li>
+                            <li><a href="homework.html">Homework</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </aside>
+    </div>
+    <script defer src="../js/lesson.js"></script>
+    <script src="../../shared/js/nav-lock.js"></script>
+</body>
+</html>
