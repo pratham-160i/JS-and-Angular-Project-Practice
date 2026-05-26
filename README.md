@@ -6,7 +6,7 @@ A personal record of progress through a full JavaScript curriculum — from abso
 
 After you enable GitHub Pages on this repository, the site will be available at:
 
-**https://github.com/pratham-160i/JS-and-Angular-Project-Practice**
+**https://pratham-160i.github.io/JS-and-Angular-Project-Practice/**
 
 Use the **Curriculum** panel on the right sidebar to jump between days and pages.
 
