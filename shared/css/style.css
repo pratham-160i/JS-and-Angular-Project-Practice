@@ -311,12 +311,145 @@ body {
     font-size: 0.72rem;
 }
 
+/* Day lesson / hands-on / homework pages (main column next to curriculum outline) */
+.page-main {
+    min-width: 0;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    align-self: start;
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+}
+
+.page-title h1 {
+    font-size: 1.75rem;
+    color: #1f2937;
+    margin-top: 0.35rem;
+}
+
+.lesson-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    letter-spacing: 0.02em;
+}
+
+details.exercise {
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fafafa;
+    overflow: hidden;
+}
+
+details.exercise > summary {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    background: #f3f4f6;
+}
+
+details.exercise > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.exercise[open] > summary {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.lesson-task__body {
+    padding: 1rem 1rem 1.25rem;
+}
+
+.lesson-task__body p {
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    color: #4b5563;
+}
+
+.lesson-task__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: #3b82f6;
+    border-radius: 4px;
+}
+
+.lesson-task__title {
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.code-sample {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.code-sample code {
+    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, monospace;
+    white-space: pre;
+}
+
+.output-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+.output-label code {
+    font-size: 0.82rem;
+}
+
+.site-outline-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.site-outline-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-outline-day {
+    margin-bottom: 0.35rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .page-shell {
         grid-template-columns: 1fr;
         gap: 1rem;
         padding: 1rem;
+    }
+
+    .page-main {
+        padding: 1.25rem;
     }
 
     .page-shell--hub {
