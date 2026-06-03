@@ -440,6 +440,128 @@ details.exercise[open] > summary {
     margin-bottom: 0.35rem;
 }
 
+/* Hub: full-page source reader (code-view.html) */
+.code-view-body {
+    margin: 0;
+    min-height: 100vh;
+    background: #f1f5f9;
+}
+
+.code-view-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.code-view-header {
+    background: #fff;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    margin-bottom: 1rem;
+}
+
+.code-view-breadcrumb {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+}
+
+.code-view-breadcrumb a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.code-view-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.code-view-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.code-view-meta {
+    margin: 0 0 1rem;
+    font-size: 0.88rem;
+    color: #64748b;
+    font-family: ui-monospace, Menlo, Monaco, monospace;
+    word-break: break-all;
+}
+
+.code-view-actions {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.code-view-btn {
+    display: inline-block;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #fff;
+    background: #2563eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.code-view-btn:hover {
+    background: #1d4ed8;
+}
+
+.code-view-btn--secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.code-view-btn--secondary:hover {
+    background: #cbd5e1;
+}
+
+.code-view-main {
+    margin: 0;
+}
+
+.code-view-pre {
+    margin: 0;
+    padding: 0;
+    background: #282c34;
+    border-radius: 10px;
+    overflow: auto;
+    max-height: calc(100vh - 14rem);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+}
+
+.code-view-pre code.hljs {
+    background: transparent;
+}
+
+.code-view-code {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, monospace;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    white-space: pre;
+    tab-size: 2;
+}
+
+.code-view-error {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    background: #fef2f2;
+    color: #b91c1c;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .page-shell {

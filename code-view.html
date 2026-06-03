@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source — JavaScript Learning</title>
+    <link rel="stylesheet" href="shared/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" crossorigin="anonymous">
+</head>
+<body class="code-view-body">
+    <div class="code-view-wrap">
+        <header class="code-view-header">
+            <p class="code-view-breadcrumb"><a href="index.html">← Curriculum overview</a></p>
+            <h1 class="code-view-title" id="cv-topic">Loading…</h1>
+            <p class="code-view-meta" id="cv-meta"></p>
+            <p class="code-view-actions">
+                <a id="cv-raw" class="code-view-btn code-view-btn--secondary" href="#" target="_blank" rel="noopener">Open raw .js</a>
+                <button type="button" class="code-view-btn" id="cv-copy" hidden>Copy all</button>
+            </p>
+        </header>
+        <main class="code-view-main">
+            <pre class="code-view-pre" id="cv-pre" hidden><code id="cv-code" class="code-view-code language-javascript"></code></pre>
+            <p class="code-view-error" id="cv-error" hidden></p>
+        </main>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" crossorigin="anonymous"></script>
+    <script>
+(function () {
+    'use strict';
+
+    function safeFilePath(f) {
+        if (typeof f !== 'string') return null;
+        var t = f.trim().replace(/\\/g, '/').replace(/^(\.\/)+/, '');
+        if (!/^day-\d+\/js\/[\w.-]+\.js$/.test(t)) return null;
+        return t;
+    }
+
+    function readTopicFromLocation() {
+        var params = new URLSearchParams(window.location.search);
+        var fromQuery = params.get('topic');
+        if (fromQuery) return fromQuery;
+        var h = window.location.hash || '';
+        if (h.indexOf('#t=') === 0) {
+            try {
+                return decodeURIComponent(h.slice(3));
+            } catch (e) {
+                return '';
+            }
+        }
+        return '';
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var file = safeFilePath(params.get('file') || '');
+    var topic = readTopicFromLocation();
+    var kind = params.get('kind') || '';
+
+    var elTopic = document.getElementById('cv-topic');
+    var elMeta = document.getElementById('cv-meta');
+    var elCode = document.getElementById('cv-code');
+    var elPre = document.getElementById('cv-pre');
+    var elErr = document.getElementById('cv-error');
+    var elRaw = document.getElementById('cv-raw');
+    var elCopy = document.getElementById('cv-copy');
+    var rawSource = '';
+
+    if (!file) {
+        elTopic.textContent = 'Missing or invalid file';
+        elErr.hidden = false;
+        elErr.textContent = 'Use a link from the curriculum (Code) with a path like day-12/js/lesson.js.';
+        return;
+    }
+
+    elRaw.href = file;
+    var baseName = file.split('/').pop() || 'source.js';
+    document.title = baseName + ' — JavaScript Learning';
+
+    if (topic) {
+        elTopic.textContent = topic;
+    } else {
+        elTopic.textContent = file;
+    }
+
+    var metaParts = [file];
+    if (kind) metaParts.push(kind);
+    elMeta.textContent = metaParts.join(' · ');
+
+    function applyHighlight() {
+        if (window.hljs && typeof window.hljs.highlightElement === 'function') {
+            elCode.classList.add('hljs');
+            window.hljs.highlightElement(elCode);
+        }
+    }
+
+    fetch(file, { credentials: 'same-origin' })
+        .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+        })
+        .then(function (text) {
+            rawSource = text;
+            elCode.textContent = text;
+            elPre.hidden = false;
+            elCopy.hidden = false;
+            applyHighlight();
+        })
+        .catch(function (err) {
+            elErr.hidden = false;
+            elErr.textContent = 'Could not load this file. Serve the site over http(s) (e.g. python -m http.server) so fetch can read it. (' + (err && err.message ? err.message : 'error') + ')';
+        });
+
+    elCopy.addEventListener('click', function () {
+        var t = rawSource || elCode.textContent;
+        if (!t || !navigator.clipboard) return;
+        navigator.clipboard.writeText(t).then(function () {
+            elCopy.textContent = 'Copied!';
+            setTimeout(function () { elCopy.textContent = 'Copy all'; }, 2000);
+        });
+    });
+})();
+    </script>
+</body>
+</html>
